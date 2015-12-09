@@ -1,0 +1,5 @@
+0.domainComponent = "{{simplepki_domainComponent_tld}}"
+1.domainComponent = "{{simplepki_domainComponent_domain}}"
+organizationName = "{{simplepki_organizationName}}"
+organizationalUnitName = $suffix
+commonName = "{{simplepki_organizationName}} "$suffix

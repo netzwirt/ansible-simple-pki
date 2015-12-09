@@ -1,0 +1,26 @@
+---
+# tasks file for netzwirt.simple-pki
+
+- include: pki-structure.yml
+- include: ssl-config.yml
+- include: certs.ca.yml
+
+# renew request is just deletion of existing certs
+# so they will be recreated
+- name: renew certificates
+  shell: rm -f {{simplepki_certs_dir}}/{{item}}.{{simplepki_file_ext}}.*
+  ignore_errors: yes
+  changed_when: false
+  with_items: simplepki_renew_certificates
+  
+# create requested user/server certs
+- include: certs.users.yml
+- include: certs.servers.yml
+
+# trigger revocation
+- name: write revocation list
+  template:
+    dest={{simplepki_certs_dir}}/00-revocation.list.txt
+    src=revocation.list.j2
+  notify: [create crls,create chained ca file,revoke certificates]
+

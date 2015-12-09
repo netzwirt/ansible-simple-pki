@@ -1,0 +1,51 @@
+---
+# tasks file for netzwirt.simple-pki
+# create pki structure
+
+- name: create world readable simple-pki directories
+  file: 
+    path={{item}} 
+    state=directory 
+    mode=0755 
+    owner=root
+  with_items:
+    - "{{simplepki_base_dir|trim}}"
+    - "{{simplepki_ca_base_dir|trim}}"
+    - "{{simplepki_conf_dir|trim}}"
+    - "{{simplepki_certs_dir|trim}}"
+    - "{{simplepki_crls_dir|trim}}"
+
+- name: create protected simple-pki directories
+  file: 
+    path={{item}} 
+    state=directory 
+    mode=0700 
+    owner=root
+  with_items:
+    - "{{simplepki_root_ca_dir|trim}}"
+    - "{{simplepki_root_ca_private_dir|trim}}"
+    - "{{simplepki_root_ca_db_dir|trim}}"
+    - "{{simplepki_signing_ca_dir|trim}}"
+    - "{{simplepki_signing_ca_private_dir|trim}}"
+    - "{{simplepki_signing_ca_db_dir|trim}}"
+
+- name: init simple-pki db's
+  shell: touch "{{item}}"
+    creates="{{item}}"
+    executable=/bin/bash
+  with_items:
+    - "{{simplepki_root_ca_db_dir|trim}}/{{simplepki_root_ca_name|trim}}.db"
+    - "{{simplepki_root_ca_db_dir|trim}}/{{simplepki_root_ca_name|trim}}.db.attr"
+    - "{{simplepki_signing_ca_db_dir|trim}}/{{simplepki_signing_ca_name|trim}}.db"
+    - "{{simplepki_signing_ca_db_dir|trim}}/{{simplepki_signing_ca_name|trim}}.db.attr"
+
+
+- name: init simple-pki serials
+  shell: echo 01 > "{{item}}"
+    creates="{{item}}"
+    executable=/bin/bash
+  with_items:
+    - "{{simplepki_root_ca_db_dir|trim}}/{{simplepki_root_ca_name|trim}}.crt.srl"
+    - "{{simplepki_root_ca_db_dir|trim}}/{{simplepki_root_ca_name|trim}}.crl.srl"
+    - "{{simplepki_signing_ca_db_dir|trim}}/{{simplepki_signing_ca_name|trim}}.crt.srl"
+    - "{{simplepki_signing_ca_db_dir|trim}}/{{simplepki_signing_ca_name|trim}}.crl.srl"

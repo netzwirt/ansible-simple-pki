@@ -1,0 +1,15 @@
+[ match_pol ]
+domainComponent = match
+organizationName = match
+organizationalUnitName = optional
+commonName = supplied
+
+[ any_pol ]
+domainComponent = optional
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+organizationalUnitName = optional
+commonName = optional
+emailAddress = optional

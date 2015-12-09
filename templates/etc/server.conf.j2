@@ -1,0 +1,29 @@
+# TLS server certificate request
+
+# This file is used by the openssl req command. The subjectAltName cannot be
+# prompted for and must be specified in the SAN environment variable.
+
+[ default ]
+PKI_SAN = DNS:{{ansible_fqdn}}
+PKI_FQDN = {{ansible_fqdn}}
+
+suffix = 'Server'
+
+[ req ]
+{% include 'inc/request.txt' %}
+
+distinguished_name = server_dn # DN template
+req_extensions = server_reqext # Desired extensions
+
+[ server_dn ]
+# use CA dn, but overwrite some fields
+{% include 'inc/ca_dn.txt' %}
+
+organizationalUnitName = "Hosting: "$ENV::PKI_FQDN
+commonName = $ENV::PKI_FQDN
+
+[ server_reqext ]
+keyUsage = critical,digitalSignature,keyEncipherment
+extendedKeyUsage = serverAuth
+subjectKeyIdentifier = hash
+subjectAltName = $ENV::PKI_SAN

@@ -1,0 +1,16 @@
+# Require unique subject
+unique_subject = no   
+# MD to use                 
+default_md = {{simplepki_message_digest}} 
+# Default naming policy                  
+policy = match_pol   
+# Add email to cert DN         
+email_in_dn = no  
+# Keep passed DN ordering                  
+preserve = no      
+# Subject DN display options              
+name_opt = ca_default   
+# Certificate display options         
+cert_opt = ca_default    
+# CRL extensions        
+crl_extensions = crl_ext

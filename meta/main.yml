@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  author: 'Reto Gassmann'
+  description: 'Simple PKI for Ubuntu/Debian'
+  license: BSD
+  min_ansible_version: '1.8'
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - trusty
+  - name: Debian
+    versions:
+    - jessie
+
+  categories:
+  - networking
+  - system
+  - security
+  - cryptography
+  
+dependencies: []
+  
+allow_duplicates: yes 

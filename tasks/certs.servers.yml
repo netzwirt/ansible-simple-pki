@@ -1,0 +1,35 @@
+---
+# tasks file for netzwirt.simple-pki
+# create server requests and certs
+
+- name: create server requests
+  shell: PKI_FQDN="{{item.fqdn|trim}}"
+      {% if item.altnames is defined %}PKI_SAN="DNS:{{item.altnames|join(',DNS:')}}"{% endif %} openssl req -new
+      -config {{simplepki_conf_dir|trim}}/server.conf
+      -out {{item.fqdn|trim}}{{simplepki_file_ext_csr}}
+      -keyout {{item.fqdn|trim}}{{simplepki_file_ext_key}}
+    creates="{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
+    executable=/bin/bash
+    chdir="{{simplepki_certs_dir}}"
+  with_items: simplepki_server_certs
+    
+- name: sign server requests
+  shell: openssl ca
+      -config {{simplepki_conf_dir|trim}}/{{simplepki_signing_ca_name|trim}}.conf
+      -in {{item.fqdn|trim}}{{simplepki_file_ext_csr}}
+      -out {{item.fqdn|trim}}{{simplepki_file_ext_crt}}
+      -extensions server_ext
+      -batch
+    creates="{{item.fqdn|trim}}{{simplepki_file_ext_crt}}"
+    executable=/bin/bash
+    chdir="{{simplepki_certs_dir}}"
+  with_items: simplepki_server_certs
+
+- name: protect server keys
+  file: 
+    path="{{simplepki_certs_dir}}/{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
+    owner=root 
+    group=root 
+    mode=0400
+  with_items: simplepki_server_certs
+

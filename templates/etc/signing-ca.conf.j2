@@ -1,0 +1,88 @@
+# Simple Signing CA
+
+# The [default] section contains global constants that can be referred to from
+# the entire configuration file. It may also hold settings pertaining to more
+# than one openssl command.
+
+[ default ]
+# CA name
+ca = {{simplepki_signing_ca_name}}  
+suffix = "Signing CA"
+
+# The next part of the configuration file is used by the openssl req command.
+# It defines the CA's key pair, its DN, and the desired extensions for the CA
+# certificate.
+
+[ req ]
+{% include 'inc/request.txt' %}
+
+distinguished_name = ca_dn # DN section
+req_extensions = ca_reqext # Desired extensions
+
+[ ca_dn ]
+{% include 'inc/ca_dn.txt' %}
+
+[ ca_reqext ]
+keyUsage = critical,keyCertSign,cRLSign
+basicConstraints = critical,CA:true,pathlen:0
+subjectKeyIdentifier = hash
+
+# The remainder of the configuration file is used by the openssl ca command.
+# The CA section defines the locations of CA assets, as well as the policies
+# applying to the CA.
+
+[ ca ]
+# The default CA section
+default_ca = signing_ca            
+
+[ signing_ca ]
+# The CA cert
+certificate = {{simplepki_ca_base_dir}}/{{simplepki_signing_ca_name}}{{simplepki_file_ext_crt}} 
+# CA private key
+private_key = {{simplepki_signing_ca_private_dir}}/{{simplepki_signing_ca_name}}{{simplepki_file_ext_key}} 
+# Certificate archive
+new_certs_dir = {{simplepki_signing_ca_dir}} 
+# Serial number file
+serial = {{simplepki_signing_ca_db_dir}}/{{simplepki_signing_ca_name}}.crt.srl 
+# CRL number file
+crlnumber = {{simplepki_signing_ca_db_dir}}/{{simplepki_signing_ca_name}}.crl.srl 
+# Index file
+database = {{simplepki_signing_ca_db_dir}}/{{simplepki_signing_ca_name}}.db  
+
+{% include 'inc/ca_defaults.txt' %}
+
+# Default cert extensions
+x509_extensions = email_ext    
+# How long before next CRL         
+default_crl_days = 7   
+# Copy extensions from CSR                  
+copy_extensions = copy
+# How long to certify for                  
+default_days = 730                   
+
+# Naming policies control which parts of a DN end up in the certificate and
+# under what circumstances certification should be denied.
+{% include 'inc/ca_policy.txt' %}
+
+# Certificate extensions define what types of certificates the CA is able to
+# create.
+
+[ user_ext ]
+keyUsage = critical,digitalSignature,keyEncipherment
+basicConstraints = CA:false
+extendedKeyUsage = emailProtection,clientAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+
+[ server_ext ]
+keyUsage = critical,digitalSignature,keyEncipherment
+basicConstraints = CA:false
+extendedKeyUsage = serverAuth,clientAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer:always
+
+# CRL extensions exist solely to point to the CA certificate that has issued
+# the CRL.
+
+[ crl_ext ]
+authorityKeyIdentifier = keyid:always,issuer:always

@@ -1,0 +1,33 @@
+---
+# vars file for netzwirt.simple-pki
+# there's no need to change this values 
+
+simplepki_root_ca_name: "root-ca"
+simplepki_signing_ca_name: "signing-ca"
+simplepki_chained_ca_name: "chained-ca"
+
+simplepki_message_digest: "sha256"
+
+simplepki_conf_dir: "{{simplepki_base_dir|trim}}/etc"
+
+simplepki_certs_dir: "{{simplepki_base_dir|trim}}/certs"
+simplepki_crls_dir: "{{simplepki_base_dir|trim}}/crl"
+
+simplepki_ca_base_dir: "{{simplepki_base_dir|trim}}/ca"
+
+simplepki_signing_ca_dir: "{{simplepki_ca_base_dir|trim}}/{{simplepki_signing_ca_name|trim}}"
+simplepki_signing_ca_private_dir: "{{simplepki_signing_ca_dir|trim}}/private"
+simplepki_signing_ca_db_dir: "{{simplepki_signing_ca_dir|trim}}/db"
+
+simplepki_root_ca_dir: "{{simplepki_ca_base_dir|trim}}/{{simplepki_root_ca_name|trim}}"
+simplepki_root_ca_private_dir: "{{simplepki_root_ca_dir|trim}}/private"
+simplepki_root_ca_db_dir: "{{simplepki_root_ca_dir|trim}}/db"
+
+# use md and key_size in endings
+# so certificates will be recreatet if you change them
+simplepki_file_ext: "{{simplepki_message_digest|trim}}.{{simplepki_key_size|trim}}"
+simplepki_file_ext_csr: ".{{simplepki_file_ext}}.csr"
+simplepki_file_ext_key: ".{{simplepki_file_ext}}.key"
+simplepki_file_ext_crt: ".{{simplepki_file_ext}}.crt"
+
+

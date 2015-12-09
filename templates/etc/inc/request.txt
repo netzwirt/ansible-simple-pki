@@ -1,0 +1,12 @@
+# RSA key size
+default_bits = {{simplepki_key_size}} 
+# Do NOT protect private key (needed for ansible)
+encrypt_key = no 
+# MD to use
+default_md = {{simplepki_message_digest}} 
+# Input is UTF-8
+utf8 = yes 
+# Emit UTF-8 strings
+string_mask = utf8only 
+# Don't prompt for DN
+prompt = no

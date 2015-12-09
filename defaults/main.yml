@@ -1,0 +1,20 @@
+---
+# defaults file for netzwirt.simple-pki
+# set the real values in host_vars/hostname file
+
+# certificate requests
+simplepki_user_certs: []
+simplepki_server_certs: []
+
+# revocation list
+simplepki_revocation_list: []
+
+# DN settings  
+simplepki_domainComponent_tld: "com"
+simplepki_domainComponent_domain: "example"
+simplepki_organizationName: "Example Company Inc"
+
+# base path for the pki
+simplepki_base_dir: "/root/pki"
+
+simplepki_key_size: "2048"
