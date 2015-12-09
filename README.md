@@ -1,5 +1,5 @@
-Role Name
-=========
+ansible-simple-pki
+==================
 
 Create a simple PKI on Ubuntu/Debian. Mostly based on [PKI-Tutorial](http://pki-tutorial.readthedocs.org/en/latest/simple/index.html)
 
