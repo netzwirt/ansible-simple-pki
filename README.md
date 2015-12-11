@@ -1,16 +1,13 @@
-ansible-simple-pki
-==================
+# ansible-simple-pki
 
 Create a simple PKI on Ubuntu/Debian. Mostly based on [PKI-Tutorial](http://pki-tutorial.readthedocs.org/en/latest/simple/index.html)
 
 
-Requirements
-------------
+## Requirements
 
 Some basic knowledge of openssl and PKI stuff.
 
-Role Variables
---------------
+## Role Variables
 
 Certificate subject:
 
@@ -36,39 +33,31 @@ Revoke certificates:
 	- fred
 	- anothor.com
 	
-Renew certificates from command-line
-------------------------------------
+## Renew certificates from command-line
 
-Pass extra variable `renew_certificates`. This variable should only be passed as command line argument.
+Pass extra variable `simplepki_renew_certificates`. This variable should only be passed as command line argument.
 
-	ansible-playbook --extra-vars '{"renew_certificates": ["fred","john"]}'
+	ansible-playbook --extra-vars '{"simplepki_renew_certificates": ["fred","john"]}'
 
-Revoke certificates from command-line
--------------------------------------
+## Revoke certificates from command-line
 
 Pass extra variable `simplepki_revocation_list`.
 
 	ansible-playbook --extra-vars '{"simplepki_revocation_list": ["fred","john"]}'
 	
-Dependencies
-------------
+## Dependencies
 
 None
 
-Example Playbook
-----------------
+## Example Playbook
 
     - hosts: pki
       roles:
          - { role: netzwirt.simple-pki }
 
-License
--------
 
-BSD
 
-Revocation cheat-sheet
-----------------------
+## Revocation cheat-sheet
 
 Revoke a certificate:
 
@@ -96,7 +85,10 @@ Check certificate with crl:
     openssl verify -crl_check_all -verbose -CAfile ca/chained-ca.sha256.2048.crt \
              -CRLfile crl/signing-ca.crl  certs/fred.sha256.2048.crt
 
-Author Information
-------------------
+# License
+
+BSD
+
+# Author Information
 
 [netzwirt](https://github.com/netzwirt)
