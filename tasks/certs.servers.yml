@@ -33,3 +33,19 @@
     mode=0400
   with_items: simplepki_server_certs
 
+- name: fetch server keys
+  fetch:
+    src="{{simplepki_certs_dir|trim}}/{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
+    dest={{inventory_dir}}/storage/{{ role_path.split('/').pop()  }}/{{inventory_hostname}}/servers/{{item.fqdn|trim}}{{simplepki_file_ext_key}}
+    flat=yes
+  with_items: simplepki_server_certs
+  when: simplepki_fetch_pki_servers
+
+- name: fetch server certs
+  fetch:
+    src="{{simplepki_certs_dir|trim}}/{{item.fqdn|trim}}{{simplepki_file_ext_crt}}"
+    dest={{inventory_dir}}/storage/{{ role_path.split('/').pop()  }}/{{inventory_hostname}}/servers/{{item.fqdn|trim}}{{simplepki_file_ext_crt}}
+    flat=yes
+  with_items: simplepki_server_certs
+  when: simplepki_fetch_pki_servers
+  

@@ -71,4 +71,21 @@
   with_items:
   - "{{simplepki_root_ca_private_dir}}/{{simplepki_root_ca_name|trim}}{{simplepki_file_ext_key}}"
   - "{{simplepki_signing_ca_private_dir}}/{{simplepki_signing_ca_name|trim}}{{simplepki_file_ext_key}}"
+
   
+- name: fetch ca keys and certs
+  fetch:
+    src="{{item}}"
+    dest={{inventory_dir}}/storage/{{ role_path.split('/').pop()  }}/{{inventory_hostname}}/ca/{{ item.split('/').pop()  }}
+    flat=yes
+  with_items:
+  - "{{simplepki_root_ca_private_dir}}/{{simplepki_root_ca_name|trim}}{{simplepki_file_ext_key}}"
+  - "{{simplepki_signing_ca_private_dir}}/{{simplepki_signing_ca_name|trim}}{{simplepki_file_ext_key}}"
+  - "{{simplepki_ca_base_dir}}/{{simplepki_root_ca_name|trim}}{{simplepki_file_ext_crt}}"
+  - "{{simplepki_ca_base_dir}}/{{simplepki_chained_ca_name|trim}}{{simplepki_file_ext_crt}}"
+  - "{{simplepki_ca_base_dir}}/{{simplepki_signing_ca_name|trim}}{{simplepki_file_ext_crt}}"
+  when: simplepki_fetch_pki_ca
+
+
+
+    

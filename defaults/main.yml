@@ -18,3 +18,7 @@ simplepki_organizationName: "Example Company Inc"
 simplepki_base_dir: "/root/pki"
 
 simplepki_key_size: "2048"
+
+simplepki_fetch_pki_users: false
+simplepki_fetch_pki_ca: false
+simplepki_fetch_pki_servers: false
