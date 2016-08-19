@@ -3,31 +3,31 @@
 # create server requests and certs
 
 - name: create server requests
-  shell: PKI_FQDN="{{item.fqdn|trim}}"
+  shell: PKI_FQDN="{{ item.fqdn | trim }}"
       {% if item.altnames is defined %}PKI_SAN="DNS:{{item.altnames|join(',DNS:')}}"{% endif %} openssl req -new
-      -config {{simplepki_conf_dir|trim}}/server.conf
-      -out {{item.fqdn|trim}}{{simplepki_file_ext_csr}}
-      -keyout {{item.fqdn|trim}}{{simplepki_file_ext_key}}
-    creates="{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
+      -config {{ simplepki_conf_dir | trim }}/server.conf
+      -out {{ item.fqdn | trim }}{{ simplepki_file_ext_csr }}
+      -keyout {{ item.fqdn | trim }}{{ simplepki_file_ext_key }}
+    creates="{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
     executable=/bin/bash
-    chdir="{{simplepki_certs_dir}}"
+    chdir="{{ simplepki_certs_dir }}"
   with_items: "{{ simplepki_server_certs }}"
     
 - name: sign server requests
   shell: openssl ca
-      -config {{simplepki_conf_dir|trim}}/{{simplepki_signing_ca_name|trim}}.conf
-      -in {{item.fqdn|trim}}{{simplepki_file_ext_csr}}
-      -out {{item.fqdn|trim}}{{simplepki_file_ext_crt}}
+      -config {{ simplepki_conf_dir | trim }}/{{ simplepki_signing_ca_name | trim }}.conf
+      -in {{ item.fqdn | trim }}{{ simplepki_file_ext_csr }}
+      -out {{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}
       -extensions server_ext
       -batch
-    creates="{{item.fqdn|trim}}{{simplepki_file_ext_crt}}"
+    creates="{{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}"
     executable=/bin/bash
-    chdir="{{simplepki_certs_dir}}"
+    chdir="{{ simplepki_certs_dir }}"
   with_items: "{{ simplepki_server_certs }}"
 
 - name: protect server keys
   file: 
-    path: "{{simplepki_certs_dir}}/{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
+    path: "{{ simplepki_certs_dir }}/{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
     owner: root 
     group: root 
     mode: 0400
@@ -35,16 +35,16 @@
 
 - name: fetch server keys
   fetch:
-    src: "{{simplepki_certs_dir|trim}}/{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
-    dest: "{{inventory_dir}}/storage/{{ role_path.split('/').pop()  }}/{{inventory_hostname}}/servers/{{item.fqdn|trim}}{{simplepki_file_ext_key}}"
+    src: "{{ simplepki_certs_dir | trim }}/{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
+    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/servers/{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
     flat: yes
   with_items: "{{ simplepki_server_certs }}"
   when: simplepki_fetch_pki_servers
 
 - name: fetch server certs
   fetch:
-    src: "{{simplepki_certs_dir|trim}}/{{item.fqdn|trim}}{{simplepki_file_ext_crt}}"
-    dest: "{{inventory_dir}}/storage/{{ role_path.split('/').pop()  }}/{{inventory_hostname}}/servers/{{item.fqdn|trim}}{{simplepki_file_ext_crt}}"
+    src: "{{ simplepki_certs_dir | trim }}/{{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}"
+    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/servers/{{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}"
     flat: yes
   with_items: "{{ simplepki_server_certs }}"
   when: simplepki_fetch_pki_servers

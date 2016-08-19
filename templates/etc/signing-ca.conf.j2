@@ -37,9 +37,9 @@ default_ca = signing_ca
 
 [ signing_ca ]
 # The CA cert
-certificate = {{simplepki_ca_base_dir}}/{{simplepki_signing_ca_name}}{{simplepki_file_ext_crt}} 
+certificate = {{ simplepki_ca_base_dir }}/{{simplepki_signing_ca_name}}{{ simplepki_file_ext_crt }} 
 # CA private key
-private_key = {{simplepki_signing_ca_private_dir}}/{{simplepki_signing_ca_name}}{{simplepki_file_ext_key}} 
+private_key = {{ simplepki_signing_ca_private_dir }}/{{simplepki_signing_ca_name}}{{ simplepki_file_ext_key }} 
 # Certificate archive
 new_certs_dir = {{simplepki_signing_ca_dir}} 
 # Serial number file

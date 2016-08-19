@@ -15,11 +15,11 @@ simplepki_crls_dir: "{{simplepki_base_dir|trim}}/crl"
 
 simplepki_ca_base_dir: "{{simplepki_base_dir|trim}}/ca"
 
-simplepki_signing_ca_dir: "{{simplepki_ca_base_dir|trim}}/{{simplepki_signing_ca_name|trim}}"
+simplepki_signing_ca_dir: "{{simplepki_ca_base_dir|trim}}/{{ simplepki_signing_ca_name | trim }}"
 simplepki_signing_ca_private_dir: "{{simplepki_signing_ca_dir|trim}}/private"
 simplepki_signing_ca_db_dir: "{{simplepki_signing_ca_dir|trim}}/db"
 
-simplepki_root_ca_dir: "{{simplepki_ca_base_dir|trim}}/{{simplepki_root_ca_name|trim}}"
+simplepki_root_ca_dir: "{{simplepki_ca_base_dir|trim}}/{{ simplepki_root_ca_name | trim }}"
 simplepki_root_ca_private_dir: "{{simplepki_root_ca_dir|trim}}/private"
 simplepki_root_ca_db_dir: "{{simplepki_root_ca_dir|trim}}/db"
 

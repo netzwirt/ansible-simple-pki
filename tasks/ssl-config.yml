@@ -4,22 +4,22 @@
 
 - name: create openssl root ca config
   template:
-    dest={{simplepki_conf_dir}}/{{simplepki_root_ca_name}}.conf
-    src=etc/root-ca.conf.j2
+    dest: "{{ simplepki_conf_dir }}/{{simplepki_root_ca_name}}.conf"
+    src: etc/root-ca.conf.j2
     
 - name: create openssl signing ca config
   template:
-    dest={{simplepki_conf_dir}}/{{simplepki_signing_ca_name}}.conf
-    src=etc/signing-ca.conf.j2
+    dest: "{{ simplepki_conf_dir }}/{{simplepki_signing_ca_name}}.conf"
+    src: etc/signing-ca.conf.j2
     
 - name: create openssl server config
   template:
-    dest={{simplepki_conf_dir}}/server.conf
-    src=etc/server.conf.j2
+    dest: "{{ simplepki_conf_dir }}/server.conf"
+    src: etc/server.conf.j2
 
 - name: create openssl user config
   template:
-    dest={{simplepki_conf_dir}}/user.conf
-    src=etc/user.conf.j2
+    dest: "{{ simplepki_conf_dir }}/user.conf"
+    src: etc/user.conf.j2
     
 

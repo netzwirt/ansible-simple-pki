@@ -8,7 +8,7 @@
 # renew request is just deletion of existing certs
 # so they will be recreated
 - name: renew certificates
-  shell: rm -f {{simplepki_certs_dir}}/{{item}}.{{simplepki_file_ext}}.*
+  shell: rm -f {{ simplepki_certs_dir }}/{{ item }}.{{simplepki_file_ext}}.*
   ignore_errors: yes
   changed_when: false
   with_items: simplepki_renew_certificates
@@ -20,7 +20,7 @@
 # trigger revocation
 - name: write revocation list
   template:
-    dest: "{{simplepki_certs_dir}}/00-revocation.list.txt"
+    dest: "{{ simplepki_certs_dir }}/00-revocation.list.txt"
     src: "revocation.list.j2"
   notify: [create crls,create chained ca file,revoke certificates]
 
