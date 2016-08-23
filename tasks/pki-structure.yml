@@ -9,11 +9,12 @@
     mode: 0755 
     owner: root
   with_items:
-    - "{{simplepki_base_dir|trim}}"
-    - "{{simplepki_ca_base_dir|trim}}"
-    - "{{ simplepki_conf_dir | trim }}"
-    - "{{ simplepki_certs_dir | trim }}"
-    - "{{simplepki_crls_dir|trim}}"
+    - "{{ simplepki_base_dir }}"
+    - "{{ simplepki_ca_base_dir }}"
+    - "{{ simplepki_conf_dir }}"
+    - "{{ simplepki_certs_dir }}"
+    - "{{ simplepki_crls_dir }}"
+
 
 - name: create protected simple-pki directories
   file: 
@@ -22,22 +23,23 @@
     mode: 0700 
     owner: root
   with_items:
-    - "{{simplepki_root_ca_dir|trim}}"
-    - "{{simplepki_root_ca_private_dir|trim}}"
-    - "{{simplepki_root_ca_db_dir|trim}}"
-    - "{{simplepki_signing_ca_dir|trim}}"
-    - "{{simplepki_signing_ca_private_dir|trim}}"
-    - "{{simplepki_signing_ca_db_dir|trim}}"
+    - "{{ simplepki_root_ca_dir }}"
+    - "{{ simplepki_root_ca_private_dir }}"
+    - "{{ simplepki_root_ca_db_dir }}"
+    - "{{ simplepki_signing_ca_dir }}"
+    - "{{ simplepki_signing_ca_private_dir }}"
+    - "{{ simplepki_signing_ca_db_dir }}"
+
 
 - name: init simple-pki db's
   shell: touch "{{ item }}"
     creates="{{ item }}"
     executable=/bin/bash
   with_items:
-    - "{{simplepki_root_ca_db_dir|trim}}/{{ simplepki_root_ca_name | trim }}.db"
-    - "{{simplepki_root_ca_db_dir|trim}}/{{ simplepki_root_ca_name | trim }}.db.attr"
-    - "{{simplepki_signing_ca_db_dir|trim}}/{{ simplepki_signing_ca_name | trim }}.db"
-    - "{{simplepki_signing_ca_db_dir|trim}}/{{ simplepki_signing_ca_name | trim }}.db.attr"
+    - "{{ simplepki_root_ca_db_dir }}/{{ simplepki_root_ca_name }}.db"
+    - "{{ simplepki_root_ca_db_dir }}/{{ simplepki_root_ca_name }}.db.attr"
+    - "{{ simplepki_signing_ca_db_dir }}/{{ simplepki_signing_ca_name }}.db"
+    - "{{ simplepki_signing_ca_db_dir }}/{{ simplepki_signing_ca_name }}.db.attr"
 
 
 - name: init simple-pki serials
@@ -45,7 +47,7 @@
     creates="{{ item }}"
     executable=/bin/bash
   with_items:
-    - "{{simplepki_root_ca_db_dir|trim}}/{{ simplepki_root_ca_name | trim }}.crt.srl"
-    - "{{simplepki_root_ca_db_dir|trim}}/{{ simplepki_root_ca_name | trim }}.crl.srl"
-    - "{{simplepki_signing_ca_db_dir|trim}}/{{ simplepki_signing_ca_name | trim }}.crt.srl"
-    - "{{simplepki_signing_ca_db_dir|trim}}/{{ simplepki_signing_ca_name | trim }}.crl.srl"
+    - "{{ simplepki_root_ca_db_dir }}/{{ simplepki_root_ca_name }}.crt.srl"
+    - "{{ simplepki_root_ca_db_dir }}/{{ simplepki_root_ca_name }}.crl.srl"
+    - "{{ simplepki_signing_ca_db_dir }}/{{ simplepki_signing_ca_name }}.crt.srl"
+    - "{{ simplepki_signing_ca_db_dir }}/{{ simplepki_signing_ca_name }}.crl.srl"
