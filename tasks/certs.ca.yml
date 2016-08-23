@@ -4,64 +4,70 @@
 
 - name: create root ca request
   shell: openssl req -new
-      -config {{ simplepki_conf_dir }}/{{ simplepki_root_ca_name | trim }}.conf
-      -out {{ simplepki_ca_base_dir }}/{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_csr }}
-      -keyout {{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_key }}
-    creates="{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_key }}"
+      -config {{ simplepki_conf_dir }}/{{ simplepki_root_ca_name }}.conf
+      -out {{ simplepki_ca_base_dir }}/{{ simplepki_root_ca_name }}{{ simplepki_file_ext_csr }}
+      -keyout {{ simplepki_root_ca_name }}{{ simplepki_file_ext_key }}
+    creates="{{ simplepki_root_ca_name }}{{ simplepki_file_ext_key }}"
     executable=/bin/bash
     chdir="{{ simplepki_root_ca_private_dir }}"
-    
+
+
 - name: create root ca certificate
   shell: openssl ca -selfsign
-      -config {{ simplepki_conf_dir }}/{{ simplepki_root_ca_name | trim }}.conf
-      -in {{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_csr }}
-      -out {{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_crt }}
+      -config {{ simplepki_conf_dir }}/{{ simplepki_root_ca_name }}.conf
+      -in {{ simplepki_root_ca_name }}{{ simplepki_file_ext_csr }}
+      -out {{ simplepki_root_ca_name }}{{ simplepki_file_ext_crt }}
       -extensions root_ca_ext
       -batch
-    creates="{{ simplepki_ca_base_dir }}/{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_crt }}"
+    creates="{{ simplepki_ca_base_dir }}/{{ simplepki_root_ca_name }}{{ simplepki_file_ext_crt }}"
     executable=/bin/bash
     chdir="{{ simplepki_ca_base_dir }}"
 
+
 - name: create signing ca request
   shell: openssl req -new
-      -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name | trim }}.conf
-      -out {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_csr }}
-      -keyout {{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_key }}
-    creates="{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_key }}"
+      -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name }}.conf
+      -out {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_csr }}
+      -keyout {{ simplepki_signing_ca_name }}{{ simplepki_file_ext_key }}
+    creates="{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_key }}"
     executable=/bin/bash
     chdir="{{ simplepki_signing_ca_private_dir }}"
-    
+
+
 - name: create signing ca certificate
   shell: openssl ca
-      -config {{ simplepki_conf_dir }}/{{ simplepki_root_ca_name | trim }}.conf
-      -in {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_csr }}
-      -out {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_crt }}
+      -config {{ simplepki_conf_dir }}/{{ simplepki_root_ca_name }}.conf
+      -in {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_csr }}
+      -out {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_crt }}
       -extensions signing_ca_ext
       -batch
-    creates="{{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_crt }}"
+    creates="{{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_crt }}"
     executable=/bin/bash
     chdir="{{ simplepki_ca_base_dir }}"
   notify: [create crls]
 
+
 - name: create initial crls
-  shell: openssl ca -gencrl -config {{ simplepki_conf_dir | trim }}/{{ item }}.conf
-         -out {{simplepki_crls_dir|trim}}/{{ item }}.crl
+  shell: openssl ca -gencrl -config {{ simplepki_conf_dir }}/{{ item }}.conf
+         -out {{simplepki_crls_dir }}/{{ item }}.crl
     executable=/bin/bash
-    creates="{{simplepki_crls_dir|trim}}/{{ item }}.crl"
+    creates="{{simplepki_crls_dir }}/{{ item }}.crl"
   notify: [create chained ca file]
   with_items:
     - "{{simplepki_signing_ca_name}}"
     - "{{simplepki_root_ca_name}}"
-    
+
+
 - name: create initial chained cert
-  shell: cat {{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_crt }}
-         {{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_crt }}
-         {{simplepki_crls_dir|trim}}/{{simplepki_root_ca_name}}.crl
-         > {{simplepki_chained_ca_name|trim}}{{ simplepki_file_ext_crt }}
+  shell: cat {{ simplepki_root_ca_name }}{{ simplepki_file_ext_crt }}
+         {{ simplepki_signing_ca_name }}{{ simplepki_file_ext_crt }}
+         {{simplepki_crls_dir }}/{{simplepki_root_ca_name}}.crl
+         > {{ simplepki_chained_ca_name }}{{ simplepki_file_ext_crt }}
     executable=/bin/bash
-    creates="{{simplepki_chained_ca_name|trim}}{{ simplepki_file_ext_crt }}"
+    creates="{{ simplepki_chained_ca_name }}{{ simplepki_file_ext_crt }}"
     chdir="{{ simplepki_ca_base_dir }}"
-           
+
+
 - name: protect keys
   file: 
     path: "{{ item }}"
@@ -69,8 +75,8 @@
     group: root 
     mode: 0400
   with_items:
-  - "{{ simplepki_root_ca_private_dir }}/{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_key }}"
-  - "{{ simplepki_signing_ca_private_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_key }}"
+  - "{{ simplepki_root_ca_private_dir }}/{{ simplepki_root_ca_name }}{{ simplepki_file_ext_key }}"
+  - "{{ simplepki_signing_ca_private_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_key }}"
 
   
 - name: fetch ca keys and certs
@@ -79,13 +85,12 @@
     dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/ca/{{ item.split('/').pop() }}"
     flat: yes
   with_items:
-  - "{{ simplepki_root_ca_private_dir }}/{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_key }}"
-  - "{{ simplepki_signing_ca_private_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_key }}"
-  - "{{ simplepki_ca_base_dir }}/{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_crt }}"
-  - "{{ simplepki_ca_base_dir }}/{{simplepki_chained_ca_name|trim}}{{ simplepki_file_ext_crt }}"
-  - "{{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_crt }}"
+  - "{{ simplepki_root_ca_private_dir }}/{{ simplepki_root_ca_name }}{{ simplepki_file_ext_key }}"
+  - "{{ simplepki_signing_ca_private_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_key }}"
+  - "{{ simplepki_root_ca_cert }}"
+  - "{{ simplepki_chained_ca_cert }}"
+  - "{{ simplepki_signing_ca_cert }}"
   when: simplepki_fetch_pki_ca
-
 
 
     
