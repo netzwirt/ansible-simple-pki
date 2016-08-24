@@ -4,7 +4,7 @@
 
 - name: create server requests
   shell: PKI_FQDN="{{ item.fqdn }}"
-      {% if item.altnames is defined %}PKI_SAN="DNS:{{item.altnames|join(',DNS:')}}"{% endif %} openssl req -new
+      PKI_SAN="DNS:{{ item.fqdn }}{% if item.altnames is defined %},DNS:{{item.altnames|join(',DNS:')}}{% endif %}" openssl req -new
       -config {{ simplepki_conf_dir }}/server.conf
       -out {{ item.fqdn }}{{ simplepki_file_ext_csr }}
       -keyout {{ item.fqdn }}{{ simplepki_file_ext_key }}
@@ -12,8 +12,6 @@
     executable=/bin/bash
     chdir="{{ simplepki_certs_dir }}"
   with_items: "{{ simplepki_server_certs }}"
-  tags:
-  - servercert
 
 
 - name: sign server requests
@@ -27,8 +25,6 @@
     executable=/bin/bash
     chdir="{{ simplepki_certs_dir }}"
   with_items: "{{ simplepki_server_certs }}"
-  tags:
-  - servercert
 
 
 - name: protect server keys
@@ -66,8 +62,6 @@
   changed_when: False
   when: simplepki_fetch_pki_servers_pem
   register: _server_certs
-  tags:
-  - servercert
 
 
 - name: generate server pem
@@ -79,8 +73,6 @@
     mode: 0400
   with_items: "{{ _server_certs.results }}"
   when: simplepki_fetch_pki_servers_pem
-  tags:
-  - servercert  
 
 
 - name: fetch server pem
@@ -90,7 +82,6 @@
     flat: yes
   with_items: "{{ simplepki_server_certs }}"
   when: simplepki_fetch_pki_servers_pem
-  tags:
-  - servercert
+
 
   
