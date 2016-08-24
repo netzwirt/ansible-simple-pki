@@ -10,13 +10,20 @@
 - name: renew certificates
   shell: rm -f {{ simplepki_certs_dir }}/{{ item }}.{{simplepki_file_ext}}.*
   ignore_errors: yes
-  changed_when: false
+  changed_when: Fasle
   with_items: simplepki_renew_certificates
-  
+  tags:
+  - servercerts
+   
 # create requested user/server certs
 - include: certs.users.yml
+  tags:
+  - usercerts
+  
 - include: certs.servers.yml
-
+  tags:
+  - servercerts
+  
 # trigger revocation
 - name: write revocation list
   template:
