@@ -2,29 +2,33 @@
 # handlers file for netzwirt.simple-pki
 
 - name: create crls
-  shell: openssl ca -gencrl -config {{ simplepki_conf_dir | trim }}/{{ item }}.conf
-         -out {{simplepki_crls_dir|trim}}/{{ item }}.crl
+  shell: openssl ca -gencrl -config {{ simplepki_conf_dir }}/{{ item }}.conf
+         -out {{ simplepki_crls_dir }}/{{ item }}.crl
     executable=/bin/bash
-  notify: [create chained ca file]
+  notify: 
+  - create chained ca file
   with_items:
-    - "{{simplepki_signing_ca_name}}"
-    - "{{simplepki_root_ca_name}}"
+    - "{{ simplepki_signing_ca_name}}"
+    - "{{ simplepki_root_ca_name}}"
+
 
 - name: create chained ca file
-  shell: cat {{simplepki_ca_base_dir|trim}}/{{ simplepki_root_ca_name | trim }}{{ simplepki_file_ext_crt }}
-         {{simplepki_ca_base_dir|trim}}/{{ simplepki_signing_ca_name | trim }}{{ simplepki_file_ext_crt }}
-         {{simplepki_crls_dir|trim}}/{{simplepki_root_ca_name}}.crl
-         > {{simplepki_ca_base_dir|trim}}/{{simplepki_chained_ca_name|trim}}{{ simplepki_file_ext_crt }}
+  shell: cat {{ simplepki_ca_base_dir }}/{{ simplepki_root_ca_name }}{{ simplepki_file_ext_crt }}
+         {{ simplepki_ca_base_dir }}/{{ simplepki_signing_ca_name }}{{ simplepki_file_ext_crt }}
+         {{ simplepki_crls_dir }}/{{ simplepki_root_ca_name}}.crl
+         > {{ simplepki_ca_base_dir }}/{{ simplepki_chained_ca_name }}{{ simplepki_file_ext_crt }}
     executable=/bin/bash
+
 
 - name: revoke certificates
   shell: if [ -z $(openssl verify -crl_check 
-         -CAfile {{simplepki_ca_base_dir|trim}}/{{simplepki_chained_ca_name|trim}}{{ simplepki_file_ext_crt }} 
-         -CRLfile {{simplepki_crls_dir|trim}}/{{ simplepki_signing_ca_name | trim }}.crl 
-         {{ simplepki_certs_dir | trim }}/{{ item }}{{ simplepki_file_ext_crt }}|sed 's/ /-/g'|grep -i revoked) ] ; 
-         then openssl ca -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name | trim }}.conf 
-         -revoke {{ simplepki_certs_dir | trim }}/{{ item }}{{ simplepki_file_ext_crt }} 
+         -CAfile {{ simplepki_ca_base_dir }}/{{ simplepki_chained_ca_name }}{{ simplepki_file_ext_crt }} 
+         -CRLfile {{ simplepki_crls_dir }}/{{ simplepki_signing_ca_name }}.crl 
+         {{ simplepki_certs_dir }}/{{ item }}{{ simplepki_file_ext_crt }}|sed 's/ /-/g'|grep -i revoked) ] ; 
+         then openssl ca -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name }}.conf 
+         -revoke {{ simplepki_certs_dir }}/{{ item }}{{ simplepki_file_ext_crt }} 
          -crl_reason unspecified ; fi
     executable=/bin/bash
-  notify: [create crls]
+  notify: 
+  - create crls
   with_items: simplepki_revocation_list

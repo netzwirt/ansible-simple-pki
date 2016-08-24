@@ -32,6 +32,10 @@ Revoke certificates:
 	simplepki_revocation_list:
 	- fred
 	- anothor.com
+
+## Create server certs only
+
+	ansible-playbook playbook.yml --tags=servercert
 	
 ## Renew certificates from command-line
 

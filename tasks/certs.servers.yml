@@ -3,49 +3,94 @@
 # create server requests and certs
 
 - name: create server requests
-  shell: PKI_FQDN="{{ item.fqdn | trim }}"
+  shell: PKI_FQDN="{{ item.fqdn }}"
       {% if item.altnames is defined %}PKI_SAN="DNS:{{item.altnames|join(',DNS:')}}"{% endif %} openssl req -new
-      -config {{ simplepki_conf_dir | trim }}/server.conf
-      -out {{ item.fqdn | trim }}{{ simplepki_file_ext_csr }}
-      -keyout {{ item.fqdn | trim }}{{ simplepki_file_ext_key }}
-    creates="{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
+      -config {{ simplepki_conf_dir }}/server.conf
+      -out {{ item.fqdn }}{{ simplepki_file_ext_csr }}
+      -keyout {{ item.fqdn }}{{ simplepki_file_ext_key }}
+    creates="{{ item.fqdn }}{{ simplepki_file_ext_key }}"
     executable=/bin/bash
     chdir="{{ simplepki_certs_dir }}"
   with_items: "{{ simplepki_server_certs }}"
-    
+  tags:
+  - servercert
+
+
 - name: sign server requests
   shell: openssl ca
-      -config {{ simplepki_conf_dir | trim }}/{{ simplepki_signing_ca_name | trim }}.conf
-      -in {{ item.fqdn | trim }}{{ simplepki_file_ext_csr }}
-      -out {{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}
+      -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name }}.conf
+      -in {{ item.fqdn }}{{ simplepki_file_ext_csr }}
+      -out {{ item.fqdn }}{{ simplepki_file_ext_crt }}
       -extensions server_ext
       -batch
-    creates="{{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}"
+    creates="{{ item.fqdn }}{{ simplepki_file_ext_crt }}"
     executable=/bin/bash
     chdir="{{ simplepki_certs_dir }}"
   with_items: "{{ simplepki_server_certs }}"
+  tags:
+  - servercert
+
 
 - name: protect server keys
   file: 
-    path: "{{ simplepki_certs_dir }}/{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
+    path: "{{ simplepki_certs_dir }}/{{ item.fqdn }}{{ simplepki_file_ext_key }}"
     owner: root 
     group: root 
     mode: 0400
   with_items: "{{ simplepki_server_certs }}"
 
+
 - name: fetch server keys
   fetch:
-    src: "{{ simplepki_certs_dir | trim }}/{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
-    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/servers/{{ item.fqdn | trim }}{{ simplepki_file_ext_key }}"
+    src: "{{ simplepki_certs_dir }}/{{ item.fqdn }}{{ simplepki_file_ext_key }}"
+    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/servers/{{ item.fqdn }}{{ simplepki_file_ext_key }}"
     flat: yes
   with_items: "{{ simplepki_server_certs }}"
   when: simplepki_fetch_pki_servers
 
+
 - name: fetch server certs
   fetch:
-    src: "{{ simplepki_certs_dir | trim }}/{{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}"
-    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/servers/{{ item.fqdn | trim }}{{ simplepki_file_ext_crt }}"
+    src: "{{ simplepki_certs_dir }}/{{ item.fqdn }}{{ simplepki_file_ext_crt }}"
+    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/servers/{{ item.fqdn }}{{ simplepki_file_ext_crt }}"
     flat: yes
   with_items: "{{ simplepki_server_certs }}"
   when: simplepki_fetch_pki_servers
+
+
+- name: register server pem
+  shell: cat "{{ simplepki_certs_dir }}/{{ item.fqdn }}{{ simplepki_file_ext_crt }}" && 
+         cat "{{ simplepki_certs_dir }}/{{ item.fqdn }}{{ simplepki_file_ext_key }}" && 
+         cat "{{ simplepki_chained_ca_cert }}"
+  with_items: "{{ simplepki_server_certs }}"
+  changed_when: False
+  when: simplepki_fetch_pki_servers_pem
+  register: _server_certs
+  tags:
+  - servercert
+
+
+- name: generate server pem
+  template: 
+    src: "pem.j2" 
+    dest: "{{ simplepki_certs_dir }}/{{ item.item.fqdn }}.pem" 
+    owner: root 
+    group: root
+    mode: 0400
+  with_items: "{{ _server_certs.results }}"
+  when: simplepki_fetch_pki_servers_pem
+  tags:
+  - servercert  
+
+
+- name: fetch server pem
+  fetch: 
+    src: "{{ simplepki_certs_dir }}/{{ item.fqdn }}.pem"
+    dest: "{{ simplepki_local_pem_storage }}/{{ item.fqdn }}.pem"
+    flat: yes
+  with_items: "{{ simplepki_server_certs }}"
+  when: simplepki_fetch_pki_servers_pem
+  tags:
+  - servercert
+
   
