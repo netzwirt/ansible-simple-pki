@@ -11,7 +11,7 @@
   shell: rm -f {{ simplepki_certs_dir }}/{{ item }}.{{simplepki_file_ext}}.*
   ignore_errors: yes
   changed_when: Fasle
-  with_items: simplepki_renew_certificates
+  with_items: "{{ simplepki_renew_certificates }}"
   tags:
   - servercerts
    
