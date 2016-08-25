@@ -82,7 +82,7 @@
 - name: fetch ca keys
   fetch:
     src: "{{ item }}"
-    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/ca/{{ item.split('/').pop() }}"
+    dest: "{{ simplepki_storage_ca_keys }}/{{ item.split('/').pop() }}"
     flat: yes
   with_items:
   - "{{ simplepki_root_ca_private_dir }}/{{ simplepki_root_ca_name }}{{ simplepki_file_ext_key }}"
@@ -93,7 +93,7 @@
 - name: fetch ca certs
   fetch:
     src: "{{ item }}"
-    dest: "{{ inventory_dir }}/storage/{{ role_path.split('/').pop()  }}/{{ inventory_hostname }}/ca/{{ item.split('/').pop() }}"
+    dest: "{{ simplepki_storage_ca_certs }}/{{ item.split('/').pop() }}"
     flat: yes
   with_items:
   - "{{ simplepki_root_ca_cert }}"
