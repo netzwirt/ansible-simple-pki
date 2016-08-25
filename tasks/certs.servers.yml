@@ -78,7 +78,7 @@
 - name: fetch server pem
   fetch: 
     src: "{{ simplepki_certs_dir }}/{{ item.fqdn }}.pem"
-    dest: "{{ simplepki_local_pem_storage }}/{{ item.fqdn }}.pem"
+    dest: "{{ simplepki_storage_servers_pem }}/{{ item.fqdn }}.pem"
     flat: yes
   with_items: "{{ simplepki_server_certs }}"
   when: simplepki_fetch_pki_servers_pem
