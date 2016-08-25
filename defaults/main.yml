@@ -19,6 +19,7 @@ simplepki_base_dir: "/root/pki"
 
 simplepki_key_size: "2048"
 
+# fetch pki elements to ansible machine
 simplepki_fetch_pki_users_certs: False
 simplepki_fetch_pki_users_keys: False
 simplepki_fetch_pki_ca_certs: False
