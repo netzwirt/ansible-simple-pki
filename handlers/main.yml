@@ -5,7 +5,7 @@
   shell: openssl ca -gencrl -config {{ simplepki_conf_dir }}/{{ item }}.conf
          -out {{ simplepki_crls_dir }}/{{ item }}.crl
     executable=/bin/bash
-  notify: 
+  notify:
   - create chained ca file
   with_items:
     - "{{ simplepki_signing_ca_name}}"
@@ -21,14 +21,14 @@
 
 
 - name: revoke certificates
-  shell: if [ -z $(openssl verify -crl_check 
-         -CAfile {{ simplepki_ca_base_dir }}/{{ simplepki_chained_ca_name }}{{ simplepki_file_ext_crt }} 
-         -CRLfile {{ simplepki_crls_dir }}/{{ simplepki_signing_ca_name }}.crl 
-         {{ simplepki_certs_dir }}/{{ item }}{{ simplepki_file_ext_crt }}|sed 's/ /-/g'|grep -i revoked) ] ; 
-         then openssl ca -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name }}.conf 
-         -revoke {{ simplepki_certs_dir }}/{{ item }}{{ simplepki_file_ext_crt }} 
+  shell: if [ -z $(openssl verify -crl_check
+         -CAfile {{ simplepki_ca_base_dir }}/{{ simplepki_chained_ca_name }}{{ simplepki_file_ext_crt }}
+         -CRLfile {{ simplepki_crls_dir }}/{{ simplepki_signing_ca_name }}.crl
+         {{ simplepki_certs_dir }}/{{ item }}{{ simplepki_file_ext_crt }}|sed 's/ /-/g'|grep -i revoked) ] ;
+         then openssl ca -config {{ simplepki_conf_dir }}/{{ simplepki_signing_ca_name }}.conf
+         -revoke {{ simplepki_certs_dir }}/{{ item }}{{ simplepki_file_ext_crt }}
          -crl_reason unspecified ; fi
     executable=/bin/bash
-  notify: 
+  notify:
   - create crls
   with_items: simplepki_revocation_list
