@@ -4,8 +4,8 @@
 # prompted for and must be specified in the SAN environment variable.
 
 [ default ]
-PKI_SAN = DNS:{{ansible_fqdn}}
-PKI_FQDN = {{ansible_fqdn}}
+PKI_SAN = DNS:{{ inventory_hostname }}
+PKI_FQDN = {{ inventory_hostname }}
 
 suffix = 'Server'
 
